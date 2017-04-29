@@ -5,7 +5,7 @@ from ddp import *
 n = 100     # System's order
 m = 50      # Nmbr of controls
 
-N = 19      # Final time
+N = 99      # Final time
 
 cost_thres = 0.001
 
@@ -31,7 +31,7 @@ for i in range(0, n):
         B[i,j] = float(i-j)/(n+m)
         C[i,j] = mu * float(i+j)/(n+m)
 
-u_guess = np.zeros((N,m))
+u_guess = np.ones((N,m))*0.01
 
 x_0 = np.zeros(n)
 
@@ -39,4 +39,13 @@ testSys = testSystem(A, B, C, gamma, n, m)
 testCost = testCost(n, m)
 
 
-(x, u) = ddp(testSys, testCost, x_0, u_guess, N, cost_thres)
+# DDP
+(x_ddp, u_ddp, J_ddp) = ddp(testSys, testCost, x_0, u_guess, N, cost_thres)
+
+print "Final cost DDP", J_ddp
+
+# Stagewise Newton
+(x_new, u_new, J_new) = stagewiseNewton(testSys, testCost, x_0, u_guess, N, cost_thres)
+
+print "Final cost Newton", J_new
+
